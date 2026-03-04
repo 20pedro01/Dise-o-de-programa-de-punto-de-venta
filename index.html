@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Olam - Sistema de Punto de Venta</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Notification Alert -->
+    <div id="notification" class="notification">
+        <i class="fas fa-info-circle"></i>
+        <span id="notification-message">Mensaje de prueba</span>
+    </div>
+
+    <!-- 1️⃣ PANTALLA DE LOGIN (Visible by default) -->
+    <section id="login-screen" class="screen active">
+        <div class="login-container">
+            <div class="login-header">
+                <i class="fas fa-mortar-pestle logo-icon"></i>
+                <h1>Olam</h1>
+                <p>Farmacia y Papelería - Kanxoc</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" placeholder="Ingrese su usuario" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="********" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Iniciar sesión</button>
+            </form>
+            <div class="login-footer">
+                <p>&copy; 2026 POS Olam - Kanxoc, Yucatán</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN APP WRAPPER (Hidden until login) -->
+    <div id="app-wrapper" class="hidden">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-mortar-pestle sidebar-logo"></i>
+                <span>POS Olam</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-screen="dashboard">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-screen="pos">
+                    <i class="fas fa-cash-register"></i> Ventas (POS)
+                </a>
+                <a href="#" class="nav-item" data-screen="inventory">
+                    <i class="fas fa-boxes-stacked"></i> Inventario
+                </a>
+                <a href="#" class="nav-item" data-screen="reports">
+                    <i class="fas fa-chart-line"></i> Reportes
+                </a>
+                <a href="#" class="nav-item" data-screen="users">
+                    <i class="fas fa-users-cog"></i> Usuarios
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="logout-btn" class="nav-item text-danger">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+            <!-- Topbar -->
+            <header id="topbar">
+                <div class="topbar-left">
+                    <h2 id="current-screen-title">Módulo: Dashboard</h2>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-info">
+                        <span id="current-user-name">Administrador</span>
+                        <div class="user-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-body">
+                
+                <!-- 2️⃣ PANEL PRINCIPAL (DASHBOARD) -->
+                <section id="dashboard" class="view">
+                    <div class="stats-grid">
+                        <div class="card stat-card primary">
+                            <div class="card-icon"><i class="fas fa-dollar-sign"></i></div>
+                            <div class="card-info">
+                                <h3>Ventas del día</h3>
+                                <p>$4,250.00</p>
+                            </div>
+                        </div>
+                        <div class="card stat-card secondary">
+                            <div class="card-icon"><i class="fas fa-box"></i></div>
+                            <div class="card-info">
+                                <h3>Productos</h3>
+                                <p>154</p>
+                            </div>
+                        </div>
+                        <div class="card stat-card accent text-white">
+                            <div class="card-icon"><i class="fas fa-triangle-exclamation"></i></div>
+                            <div class="card-info">
+                                <h3>Bajo stock</h3>
+                                <p>12 productos</p>
+                            </div>
+                        </div>
+                        <div class="card stat-card danger">
+                            <div class="card-icon"><i class="fas fa-clock"></i></div>
+                            <div class="card-info">
+                                <h3>Alertas caducidad</h3>
+                                <p>5 productos</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <h3>Acceso rápido</h3>
+                        <div class="actions-grid">
+                            <button class="btn btn-action" onclick="switchView('pos')">
+                                <i class="fas fa-plus"></i> Nueva venta
+                            </button>
+                            <button class="btn btn-action" onclick="switchView('inventory')">
+                                <i class="fas fa-search"></i> Ver Inventario
+                            </button>
+                            <button class="btn btn-action" onclick="switchView('reports')">
+                                <i class="fas fa-file-export"></i> Ver Reportes
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3️⃣ PUNTO DE VENTA (POS) -->
+                <section id="pos" class="view hidden">
+                    <div class="pos-container">
+                        <div class="pos-main">
+                            <div class="pos-search">
+                                <div class="input-with-icon">
+                                    <i class="fas fa-barcode"></i>
+                                    <input type="text" id="pos-barcode-search" placeholder="Escanear o ingresar nombre de producto...">
+                                </div>
+                                <button class="btn btn-primary" id="btn-search-product">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                            
+                            <div class="table-container pos-product-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Precio</th>
+                                            <th>Stock</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pos-search-results">
+                                        <!-- Products dynamically inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <aside class="pos-cart">
+                            <div class="cart-header">
+                                <h3>Carrito de Compras</h3>
+                            </div>
+                            <div class="cart-items" id="cart-list">
+                                <!-- Cart items dynamically inserted here -->
+                                <div class="empty-cart-message">No hay productos en el carrito.</div>
+                            </div>
+                            <div class="cart-totals">
+                                <div class="total-row">
+                                    <span>Subtotal</span>
+                                    <span id="cart-subtotal">$0.00</span>
+                                </div>
+                                <div class="total-row">
+                                    <span>IVA (16%)</span>
+                                    <span id="cart-tax">$0.00</span>
+                                </div>
+                                <div class="total-row main-total">
+                                    <span>Total</span>
+                                    <span id="cart-total">$0.00</span>
+                                </div>
+                            </div>
+                            <div class="cart-actions">
+                                <button class="btn btn-danger btn-block" id="btn-cancel-sale">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                                <button class="btn btn-success btn-block" id="btn-finish-sale">
+                                    <i class="fas fa-check"></i> Finalizar Venta
+                                </button>
+                            </div>
+                        </aside>
+                    </div>
+                </section>
+
+                <!-- 4️⃣ GESTIÓN DE INVENTARIO -->
+                <section id="inventory" class="view hidden">
+                    <div class="toolbar">
+                        <div class="input-with-icon search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Buscar en inventario...">
+                        </div>
+                        <button class="btn btn-primary" id="btn-open-add-product">
+                            <i class="fas fa-plus"></i> Agregar Producto
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Producto</th>
+                                    <th>Categoría</th>
+                                    <th>Precio</th>
+                                    <th>Stock</th>
+                                    <th>Caducidad</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table-body">
+                                <!-- Mock data will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 5️⃣ REGISTRO DE PRODUCTOS (Modal simulation) -->
+                <div id="product-modal" class="modal hidden">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Registrar / Editar Producto</h2>
+                            <button class="close-modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="product-form" class="grid-form">
+                                <div class="form-group">
+                                    <label>Nombre del producto</label>
+                                    <input type="text" required placeholder="Ej. Paracetamol 500mg">
+                                </div>
+                                <div class="form-group">
+                                    <label>Categoría</label>
+                                    <select required>
+                                        <option value="Farmacia">Farmacia</option>
+                                        <option value="Papelería">Papelería</option>
+                                        <option value="Higiene">Higiene</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Código de barras</label>
+                                    <input type="text" placeholder="750123456789">
+                                </div>
+                                <div class="form-group">
+                                    <label>Precio de Venta</label>
+                                    <input type="number" step="0.01" required placeholder="0.00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Stock inicial</label>
+                                    <input type="number" required placeholder="0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Fecha de caducidad</label>
+                                    <input type="date">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary close-modal">Cancelar</button>
+                            <button class="btn btn-primary" id="btn-save-product">Guardar Producto</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6️⃣ REPORTES -->
+                <section id="reports" class="view hidden">
+                    <div class="reports-grid">
+                        <div class="card report-section">
+                            <h3>Informe de ventas</h3>
+                            <p>Resumen mensual y diario generado automáticamente.</p>
+                            <button class="btn btn-secondary"><i class="fas fa-file-pdf"></i> PDF</button>
+                            <button class="btn btn-secondary"><i class="fas fa-file-excel"></i> Excel</button>
+                        </div>
+                        <div class="card report-section">
+                            <h3>Informe de inventario</h3>
+                            <p>Valor total de mercadería y control de bajas.</p>
+                            <button class="btn btn-secondary"><i class="fas fa-file-pdf"></i> PDF</button>
+                            <button class="btn btn-secondary"><i class="fas fa-file-excel"></i> Excel</button>
+                        </div>
+                        <div class="card report-section full-width">
+                            <h3>Productos más vendidos</h3>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Categoría</th>
+                                            <th>Unidades Vendidas</th>
+                                            <th>Ingreso Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Paracetamol 500mg</td>
+                                            <td>Farmacia</td>
+                                            <td>120</td>
+                                            <td>$1,200.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Cuaderno de Raya 100hj</td>
+                                            <td>Papelerería</td>
+                                            <td>85</td>
+                                            <td>$1,530.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7️⃣ GESTIÓN DE USUARIOS -->
+                <section id="users" class="view hidden">
+                    <div class="toolbar">
+                        <h3>Usuarios del sistema</h3>
+                        <button class="btn btn-primary"><i class="fas fa-user-plus"></i> Agregar Usuario</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Nombre de Usuario</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Juan Pérez</td>
+                                    <td>admin</td>
+                                    <td><span class="badge badge-admin">Administrador</span></td>
+                                    <td><span class="active-dot"></span> Activo</td>
+                                    <td>
+                                        <button class="btn-icon text-primary"><i class="fas fa-edit"></i></button>
+                                        <button class="btn-icon text-danger"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>María López</td>
+                                    <td>cajero1</td>
+                                    <td><span class="badge badge-cashier">Cajero</span></td>
+                                    <td><span class="active-dot"></span> Activo</td>
+                                    <td>
+                                        <button class="btn-icon text-primary"><i class="fas fa-edit"></i></button>
+                                        <button class="btn-icon text-danger"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals for POS and other interactions -->
+    <div id="payment-modal" class="modal hidden">
+        <div class="modal-content payment-content">
+            <div class="modal-header">
+                <h2>Finalizar Venta</h2>
+            </div>
+            <div class="modal-body">
+                <div class="total-pay">Total a pagar: <span id="payment-total-amount">$0.00</span></div>
+                <div class="form-group">
+                    <label>Efectivo recibido</label>
+                    <input type="number" id="cash-received" placeholder="0.00" class="input-large">
+                </div>
+                <div class="change-display">
+                    Cambio: <span id="change-amount">$0.00</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-modal">Volver</button>
+                <button class="btn btn-success" id="btn-confirm-payment">Confirmar Pago</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
